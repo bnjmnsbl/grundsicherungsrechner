@@ -4,6 +4,7 @@ import { Tooltip } from '../ui/Tooltip';
 import { InfoBox } from '../ui/InfoBox';
 import { NavigationButtons } from '../NavigationButtons';
 import { hatAltersgrenzeErreicht } from '../../calculations';
+import { useTranslation } from '../../i18n/LanguageContext';
 import type { FormData } from '../../types';
 
 type PersonalStepProps = {
@@ -14,6 +15,8 @@ type PersonalStepProps = {
 };
 
 export function PersonalStep({ formData, onUpdate, onNext, onBack }: PersonalStepProps) {
+  const { t } = useTranslation();
+
   const hatGeburtsdatum = formData.geburtsmonat !== null && formData.geburtsjahr !== null;
   const alterErreicht = hatGeburtsdatum
     ? hatAltersgrenzeErreicht(formData.geburtsjahr!, formData.geburtsmonat!)
@@ -28,10 +31,10 @@ export function PersonalStep({ formData, onUpdate, onNext, onBack }: PersonalSte
     <div className="space-y-6">
       <div>
         <h2 className="text-xl sm:text-2xl font-bold text-primary-800">
-          Zuerst ein paar Angaben zu Ihrer Person
+          {t.personal.heading}
         </h2>
         <p className="text-gray-600 mt-1">
-          Damit wir prüfen können, ob die Grundsicherung für Sie in Frage kommt.
+          {t.personal.subheading}
         </p>
       </div>
 
@@ -40,9 +43,9 @@ export function PersonalStep({ formData, onUpdate, onNext, onBack }: PersonalSte
         <div>
           <div className="flex items-center gap-1 mb-2">
             <label className="text-base font-semibold text-gray-800">
-              Wann sind Sie geboren?
+              {t.personal.birthDate}
             </label>
-            <Tooltip text="Ihr Geburtsdatum bestimmt, ab wann Sie das gesetzliche Rentenalter erreichen. Das liegt je nach Jahrgang zwischen 65 und 67 Jahren." />
+            <Tooltip text={t.personal.birthDateTooltip} />
           </div>
           <DatePicker
             monat={formData.geburtsmonat}
@@ -56,15 +59,15 @@ export function PersonalStep({ formData, onUpdate, onNext, onBack }: PersonalSte
         <div>
           <div className="flex items-center gap-1 mb-2">
             <span className="text-base font-semibold text-gray-800">
-              Wo leben Sie?
+              {t.personal.location}
             </span>
-            <Tooltip text="Sie müssen Ihren festen Wohnsitz in Deutschland haben, um Grundsicherung zu erhalten." />
+            <Tooltip text={t.personal.locationTooltip} />
           </div>
           <RadioGroup
             name="wohnort"
             options={[
-              { value: 'deutschland', label: 'In Deutschland' },
-              { value: 'ausland', label: 'Im Ausland' },
+              { value: 'deutschland', label: t.personal.inGermany },
+              { value: 'ausland', label: t.personal.abroad },
             ]}
             value={
               formData.wohntInDeutschland === true
@@ -79,11 +82,8 @@ export function PersonalStep({ formData, onUpdate, onNext, onBack }: PersonalSte
 
         {istAusland && (
           <InfoBox variant="warning">
-            <p className="font-semibold">Hinweis</p>
-            <p>
-              Grundsicherung setzt einen festen Wohnsitz in Deutschland voraus.
-              Wenn Sie im Ausland leben, haben Sie leider keinen Anspruch.
-            </p>
+            <p className="font-semibold">{t.common.hint}</p>
+            <p>{t.personal.abroadWarning}</p>
           </InfoBox>
         )}
 
@@ -91,37 +91,37 @@ export function PersonalStep({ formData, onUpdate, onNext, onBack }: PersonalSte
         <div>
           <div className="flex items-center gap-1 mb-2">
             <span className="text-base font-semibold text-gray-800">
-              Wie ist Ihr Familienstand?
+              {t.personal.maritalStatus}
             </span>
-            <Tooltip text="Bei Paaren wird das Einkommen beider Partner gemeinsam betrachtet. Getrennt lebende werden wie Alleinstehende behandelt." />
+            <Tooltip text={t.personal.maritalStatusTooltip} />
           </div>
           <RadioGroup
             name="familienstand"
             options={[
-              { value: 'alleinstehend', label: 'Alleinstehend' },
-              { value: 'partnerschaft', label: 'Verheiratet oder in eingetragener Lebenspartnerschaft' },
-              { value: 'getrennt', label: 'Getrennt lebend' },
+              { value: 'alleinstehend', label: t.personal.single },
+              { value: 'partnerschaft', label: t.personal.married },
+              { value: 'getrennt', label: t.personal.separated },
             ]}
             value={formData.familienstand}
             onChange={(v) => onUpdate('familienstand', v as FormData['familienstand'])}
           />
         </div>
 
-        {/* 1.4 Erwerbsminderung (nur wenn Altersgrenze nicht erreicht) */}
+        {/* 1.4 Erwerbsminderung */}
         {zeigeErwerbsminderung && (
           <div className="transition-all duration-300">
             <div className="flex items-center gap-1 mb-2">
               <span className="text-base font-semibold text-gray-800">
-                Sind Sie dauerhaft voll erwerbsgemindert?
+                {t.personal.disabilityQuestion}
               </span>
-              <Tooltip text="Das bedeutet: Sie können aus gesundheitlichen Gründen dauerhaft weniger als 3 Stunden am Tag arbeiten. Dies muss ärztlich festgestellt worden sein – z.B. durch einen Bescheid der Rentenversicherung. Auch wer in einer Werkstatt für Menschen mit Behinderung arbeitet, gilt automatisch als voll erwerbsgemindert." />
+              <Tooltip text={t.personal.disabilityTooltip} />
             </div>
             <RadioGroup
               name="erwerbsminderung"
               options={[
-                { value: 'ja', label: 'Ja' },
-                { value: 'nein', label: 'Nein' },
-                { value: 'unsicher', label: 'Ich bin unsicher' },
+                { value: 'ja', label: t.common.yes },
+                { value: 'nein', label: t.common.no },
+                { value: 'unsicher', label: t.personal.unsure },
               ]}
               value={formData.istErwerbsgemindert}
               onChange={(v) => onUpdate('istErwerbsgemindert', v as FormData['istErwerbsgemindert'])}
@@ -131,29 +131,29 @@ export function PersonalStep({ formData, onUpdate, onNext, onBack }: PersonalSte
 
         {keinAlterKeineEM && (
           <InfoBox variant="warning">
-            <p className="font-semibold">Hinweis</p>
-            <p>
-              Die Grundsicherung im Alter richtet sich an Personen, die das Rentenalter
-              erreicht haben oder dauerhaft voll erwerbsgemindert sind. Beides scheint bei
-              Ihnen derzeit nicht zuzutreffen. Möglicherweise kommt für Sie das Bürgergeld
-              (früher Hartz IV) in Frage.
-            </p>
+            <p className="font-semibold">{t.common.hint}</p>
+            <p>{t.personal.noEligibilityWarning}</p>
           </InfoBox>
         )}
 
         {emUnsicher && (
           <InfoBox variant="info">
-            <p>
-              Kein Problem – für die weitere Berechnung nehmen wir an, dass eine
-              Erwerbsminderung vorliegt. Ob das tatsächlich zutrifft, muss ärztlich geprüft
-              werden. Wir empfehlen, sich bei der Deutschen Rentenversicherung beraten zu
-              lassen.
-            </p>
+            <p>{t.personal.unsureInfo}</p>
           </InfoBox>
         )}
       </div>
 
-      <NavigationButtons onBack={onBack} onNext={onNext} />
+      <NavigationButtons
+        onBack={onBack}
+        onNext={onNext}
+        nextDisabled={
+          formData.geburtsmonat === null ||
+          formData.geburtsjahr === null ||
+          formData.wohntInDeutschland === null ||
+          formData.familienstand === null ||
+          (zeigeErwerbsminderung && formData.istErwerbsgemindert === null)
+        }
+      />
     </div>
   );
 }

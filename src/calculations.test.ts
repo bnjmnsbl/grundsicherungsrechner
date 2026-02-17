@@ -7,6 +7,10 @@ import {
   berechneAnrechenbaresEinkommen,
   berechneAnspruch,
 } from './calculations';
+import type { CalcStrings } from './calculations';
+import { translations } from './i18n/translations';
+
+const calcStrings: CalcStrings = translations.de.calc;
 
 describe('getAltersgrenze', () => {
   it('gibt 65+0 für Geburtsjahr vor 1947 zurück', () => {
@@ -93,7 +97,7 @@ describe('berechneAnrechenbaresEinkommen', () => {
       sonstigesEinkommen: 0,
       einkommenPartner: 0,
       hatGrundrentenzeiten33Plus: true,
-    });
+    }, calcStrings);
     // Freibetrag: 100 + 30% von (850-100) = 100 + 225 = 325, gekappt auf 281,50
     expect(result.freibetraegeDetails).toHaveLength(1);
     expect(result.freibetraegeDetails[0].betrag).toBeCloseTo(281.50, 2);
@@ -124,7 +128,7 @@ describe('Testfall 1: Standard-Rentnerin mit Anspruch', () => {
       sonstigesEinkommen: 0,
       einkommenPartner: 0,
       hatGrundrentenzeiten33Plus: true,
-    });
+    }, calcStrings);
 
     expect(result.hatAnspruch).toBe(true);
     expect(result.ausschlussgruende).toHaveLength(0);
@@ -136,8 +140,6 @@ describe('Testfall 1: Standard-Rentnerin mit Anspruch', () => {
 
 describe('Testfall 2: Paar mit ausreichendem Einkommen', () => {
   it('erkennt Grenzfall / keinen Anspruch bei höherem Einkommen', () => {
-    // Spec: Rente 900 + Partner 800 = 1700, Bedarf = 1012+600+100 = 1712
-    // Differenz nur 12€ → Grenzfall. Mit etwas höherem Einkommen: kein Anspruch.
     const result = berechneAnspruch({
       geburtsjahr: 1955,
       geburtsmonat: 6,
@@ -157,7 +159,7 @@ describe('Testfall 2: Paar mit ausreichendem Einkommen', () => {
       sonstigesEinkommen: 0,
       einkommenPartner: 800,
       hatGrundrentenzeiten33Plus: false,
-    });
+    }, calcStrings);
 
     expect(result.hatAnspruch).toBe(false);
     expect(result.ausschlussgruende.some(g => g.code === 'EINKOMMEN_REICHT')).toBe(true);
@@ -185,7 +187,7 @@ describe('Testfall 3: Junger Mensch mit Erwerbsminderung', () => {
       sonstigesEinkommen: 0,
       einkommenPartner: 0,
       hatGrundrentenzeiten33Plus: false,
-    });
+    }, calcStrings);
 
     expect(result.hatAnspruch).toBe(true);
     expect(result.nettobedarf).toBeGreaterThan(0);
@@ -213,7 +215,7 @@ describe('Testfall 4: Vermögen zu hoch', () => {
       sonstigesEinkommen: 0,
       einkommenPartner: 0,
       hatGrundrentenzeiten33Plus: false,
-    });
+    }, calcStrings);
 
     expect(result.hatAnspruch).toBe(false);
     expect(result.ausschlussgruende.some(g => g.code === 'VERMOEGEN_ZU_HOCH')).toBe(true);
@@ -241,7 +243,7 @@ describe('Testfall 5: Grenzfall', () => {
       sonstigesEinkommen: 0,
       einkommenPartner: 0,
       hatGrundrentenzeiten33Plus: false,
-    });
+    }, calcStrings);
 
     expect(result.istGrenzfall).toBe(true);
   });

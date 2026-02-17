@@ -3,6 +3,7 @@ import { Tooltip } from '../ui/Tooltip';
 import { InfoBox } from '../ui/InfoBox';
 import { NavigationButtons } from '../NavigationButtons';
 import { pruefeVermoegen } from '../../calculations';
+import { useTranslation } from '../../i18n/LanguageContext';
 import type { FormData } from '../../types';
 
 type VermoegenStepProps = {
@@ -13,6 +14,7 @@ type VermoegenStepProps = {
 };
 
 export function VermoegenStep({ formData, onUpdate, onNext, onBack }: VermoegenStepProps) {
+  const { t } = useTranslation();
   const gesamtvermoegen = formData.geldvermoegen + formData.lebensversicherung + formData.sonstigesVermoegen;
   const hatPartner = formData.familienstand === 'partnerschaft';
   const vermoegensPruefung = pruefeVermoegen(gesamtvermoegen, hatPartner);
@@ -21,28 +23,23 @@ export function VermoegenStep({ formData, onUpdate, onNext, onBack }: VermoegenS
     <div className="space-y-6">
       <div>
         <h2 className="text-xl sm:text-2xl font-bold text-primary-800">
-          Haben Sie Ersparnisse oder Vermögen?
+          {t.assets.heading}
         </h2>
         <p className="text-gray-600 mt-1">
-          Bei der Grundsicherung gibt es einen Freibetrag: Sie dürfen bis zu{' '}
-          {hatPartner ? '20.000' : '10.000'} € behalten
-          {hatPartner ? ' (bei Paaren)' : ''}.
-          Bestimmte Dinge zählen gar nicht als Vermögen.
+          {t.assets.subheading(hatPartner ? '20,000' : '10,000', hatPartner)}
         </p>
       </div>
 
       {/* Info-Box: Was zählt nicht */}
       <div className="bg-primary-50 border border-primary-200 rounded-2xl p-5 space-y-2">
-        <p className="font-bold text-primary-800">Was zählt NICHT als Vermögen:</p>
+        <p className="font-bold text-primary-800">{t.assets.notCountedTitle}</p>
         <ul className="space-y-1 text-gray-700">
-          <li>• Ihre selbstbewohnte Wohnung oder Ihr Haus (solange angemessen)</li>
-          <li>• Ihr Auto (ein normaler PKW)</li>
-          <li>• Normaler Hausrat und Möbel</li>
-          <li>• Staatlich geförderte Riester-Rente</li>
-          <li>• Familienstücke mit persönlichem Wert</li>
+          {t.assets.notCountedItems.map((item, i) => (
+            <li key={i}>{'\u2022'} {item}</li>
+          ))}
         </ul>
         <p className="text-sm text-gray-600 font-medium">
-          Diese Dinge müssen Sie <strong>nicht</strong> mitzählen.
+          <strong>{t.assets.notCountedNote}</strong>
         </p>
       </div>
 
@@ -51,12 +48,12 @@ export function VermoegenStep({ formData, onUpdate, onNext, onBack }: VermoegenS
         <div>
           <div className="flex items-center gap-1 mb-1">
             <span className="text-base font-semibold text-gray-800">
-              Wie hoch ist Ihr Geldvermögen?
+              {t.assets.savings}
             </span>
-            <Tooltip text="Zählen Sie zusammen, was auf allen Ihren Konten liegt, plus Bargeld. Denken Sie auch an Aktien-Depots oder Fonds." />
+            <Tooltip text={t.assets.savingsTooltip} />
           </div>
           <p className="text-sm text-gray-500 mb-2">
-            Bargeld, Sparbuch, Girokonto, Tagesgeld, Aktien, Fonds
+            {t.assets.savingsHint}
           </p>
           <NumberInput
             label=""
@@ -69,12 +66,12 @@ export function VermoegenStep({ formData, onUpdate, onNext, onBack }: VermoegenS
         <div>
           <div className="flex items-center gap-1 mb-1">
             <span className="text-base font-semibold text-gray-800">
-              Haben Sie eine Lebensversicherung (nicht Riester)?
+              {t.assets.lifeInsurance}
             </span>
-            <Tooltip text="Den Rückkaufswert finden Sie in Ihrem jährlichen Versicherungsschreiben. Riester-Verträge zählen hier NICHT mit – die sind geschützt." />
+            <Tooltip text={t.assets.lifeInsuranceTooltip} />
           </div>
           <p className="text-sm text-gray-500 mb-2">
-            Wenn ja: Wie hoch ist der aktuelle Rückkaufswert?
+            {t.assets.lifeInsuranceHint}
           </p>
           <NumberInput
             label=""
@@ -87,12 +84,12 @@ export function VermoegenStep({ formData, onUpdate, onNext, onBack }: VermoegenS
         <div>
           <div className="flex items-center gap-1 mb-1">
             <span className="text-base font-semibold text-gray-800">
-              Haben Sie sonstiges verwertbares Vermögen?
+              {t.assets.otherAssets}
             </span>
-            <Tooltip text="Nur Dinge, die Sie verkaufen könnten und die einen nennenswerten Wert haben. Normaler Hausrat zählt nicht." />
+            <Tooltip text={t.assets.otherAssetsTooltip} />
           </div>
           <p className="text-sm text-gray-500 mb-2">
-            z.B. eine vermietete Wohnung, wertvoller Schmuck
+            {t.assets.otherAssetsHint}
           </p>
           <NumberInput
             label=""
@@ -106,10 +103,7 @@ export function VermoegenStep({ formData, onUpdate, onNext, onBack }: VermoegenS
       {gesamtvermoegen > 0 && !vermoegensPruefung.bestanden && (
         <InfoBox variant="warning">
           <p>
-            Ihr Vermögen liegt über dem Freibetrag von{' '}
-            {vermoegensPruefung.schongrenze.toLocaleString('de-DE')} €.
-            In diesem Fall müssten Sie zunächst Ihr Vermögen bis auf diesen Betrag
-            aufbrauchen, bevor Sie Grundsicherung erhalten können.
+            {t.assets.overLimitWarning(vermoegensPruefung.schongrenze.toLocaleString('de-DE'))}
           </p>
         </InfoBox>
       )}

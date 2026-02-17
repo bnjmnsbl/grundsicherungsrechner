@@ -1,24 +1,51 @@
 import { Check } from 'lucide-react';
-import { WIZARD_STEPS } from '../constants';
+import { useTranslation } from '../i18n/LanguageContext';
 
 type HeaderProps = {
   currentStep: number; // 0=Intro, 1-5=Steps, 6=Ergebnis
 };
 
 export function Header({ currentStep }: HeaderProps) {
-  // Intro (0) und Ergebnis (6) zeigen keinen Stepper
+  const { t, language, setLanguage } = useTranslation();
   const showStepper = currentStep >= 1 && currentStep <= 5;
 
   return (
     <header className="bg-white border-b border-cream-200 no-print">
       <div className="max-w-3xl mx-auto px-4 py-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-primary-700 text-center">
-          Grundsicherungsrechner
-        </h1>
+        <div className="flex items-center justify-between">
+          <div className="w-16" />
+          <h1 className="text-xl sm:text-2xl font-bold text-primary-700 text-center flex-1">
+            {t.header.title}
+          </h1>
+          <div className="flex items-center gap-1 w-16 justify-end">
+            <button
+              type="button"
+              onClick={() => setLanguage('de')}
+              className={`px-2 py-1 text-sm font-semibold rounded transition-colors ${
+                language === 'de'
+                  ? 'bg-primary-500 text-white'
+                  : 'text-gray-500 hover:text-primary-600'
+              }`}
+            >
+              {t.language.de}
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`px-2 py-1 text-sm font-semibold rounded transition-colors ${
+                language === 'en'
+                  ? 'bg-primary-500 text-white'
+                  : 'text-gray-500 hover:text-primary-600'
+              }`}
+            >
+              {t.language.en}
+            </button>
+          </div>
+        </div>
         {showStepper && (
-          <nav className="mt-4" aria-label="Fortschritt">
+          <nav className="mt-4" aria-label={t.header.progress}>
             <ol className="flex items-center justify-between">
-              {WIZARD_STEPS.map((step, index) => {
+              {t.steps.labels.map((label, index) => {
                 const stepNum = index + 1;
                 const isActive = currentStep === stepNum;
                 const isComplete = currentStep > stepNum;
@@ -42,17 +69,17 @@ export function Header({ currentStep }: HeaderProps) {
                           isActive ? 'text-primary-700 font-semibold' : 'text-gray-400'
                         }`}
                       >
-                        {step.label}
+                        {label}
                       </span>
                       <span
                         className={`mt-1 text-xs sm:hidden ${
                           isActive ? 'text-primary-700 font-semibold' : 'text-gray-400'
                         }`}
                       >
-                        {step.shortLabel}
+                        {t.steps.shortLabels[index]}
                       </span>
                     </div>
-                    {index < WIZARD_STEPS.length - 1 && (
+                    {index < t.steps.labels.length - 1 && (
                       <div
                         className={`flex-1 h-0.5 mx-1 sm:mx-2 ${
                           currentStep > stepNum ? 'bg-primary-500' : 'bg-cream-200'

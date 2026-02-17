@@ -1,6 +1,7 @@
 import { RadioGroup } from '../ui/RadioGroup';
 import { Tooltip } from '../ui/Tooltip';
 import { NavigationButtons } from '../NavigationButtons';
+import { useTranslation } from '../../i18n/LanguageContext';
 import type { FormData } from '../../types';
 
 type ZusatzfragenStepProps = {
@@ -11,11 +12,13 @@ type ZusatzfragenStepProps = {
 };
 
 export function ZusatzfragenStep({ formData, onUpdate, onNext, onBack }: ZusatzfragenStepProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-xl sm:text-2xl font-bold text-primary-800">
-          Fast geschafft – nur noch ein paar Punkte
+          {t.additional.heading}
         </h2>
       </div>
 
@@ -24,16 +27,16 @@ export function ZusatzfragenStep({ formData, onUpdate, onNext, onBack }: Zusatzf
         <div>
           <div className="flex items-center gap-1 mb-2">
             <span className="text-base font-semibold text-gray-800">
-              Verdient eines Ihrer Kinder oder ein Elternteil mehr als 100.000 € brutto im Jahr?
+              {t.additional.maintenanceQuestion}
             </span>
-            <Tooltip text="In der Regel werden Kinder und Eltern NICHT zum Unterhalt herangezogen. Nur wenn ein Kind oder Elternteil mehr als 100.000 € im Jahr verdient, kann der Anspruch auf Grundsicherung entfallen. Im Zweifel: ‚Nein' ankreuzen – das Sozialamt prüft dies ohnehin selbst." />
+            <Tooltip text={t.additional.maintenanceTooltip} />
           </div>
           <RadioGroup
             name="unterhaltspflichtige"
             options={[
-              { value: 'nein', label: 'Nein' },
-              { value: 'ja', label: 'Ja' },
-              { value: 'keine', label: 'Habe keine Kinder/Eltern' },
+              { value: 'nein', label: t.common.no },
+              { value: 'ja', label: t.common.yes },
+              { value: 'keine', label: t.additional.noChildren },
             ]}
             value={formData.unterhaltspflichtigeUeber100k}
             onChange={(v) => onUpdate('unterhaltspflichtigeUeber100k', v as FormData['unterhaltspflichtigeUeber100k'])}
@@ -44,16 +47,16 @@ export function ZusatzfragenStep({ formData, onUpdate, onNext, onBack }: Zusatzf
         <div>
           <div className="flex items-center gap-1 mb-2">
             <span className="text-base font-semibold text-gray-800">
-              Haben Sie einen Schwerbehindertenausweis mit dem Merkzeichen „G" oder „aG"?
+              {t.additional.disabilityCard}
             </span>
-            <Tooltip text="Wenn ja, erhalten Sie einen Zuschlag von 17 % auf den Regelsatz (ca. 96 €). Das Merkzeichen steht auf Ihrem Schwerbehindertenausweis. Wenn Sie unsicher sind, wählen Sie ‚Nein' – Sie können das später noch klären." />
+            <Tooltip text={t.additional.disabilityCardTooltip} />
           </div>
           <RadioGroup
             name="merkzeichen"
             options={[
-              { value: 'ja', label: 'Ja' },
-              { value: 'nein', label: 'Nein' },
-              { value: 'weiss_nicht', label: 'Ich weiß nicht' },
+              { value: 'ja', label: t.common.yes },
+              { value: 'nein', label: t.common.no },
+              { value: 'weiss_nicht', label: t.income.dontKnow },
             ]}
             value={formData.hatMerkzeichenG}
             onChange={(v) => onUpdate('hatMerkzeichenG', v as FormData['hatMerkzeichenG'])}
@@ -64,18 +67,18 @@ export function ZusatzfragenStep({ formData, onUpdate, onNext, onBack }: Zusatzf
         <div>
           <div className="flex items-center gap-1 mb-2">
             <span className="text-base font-semibold text-gray-800">
-              Haben Sie in den letzten 10 Jahren Ihr Vermögen absichtlich aufgebraucht, um bedürftig zu werden?
+              {t.additional.selfInflicted}
             </span>
-            <Tooltip text="Diese Frage klingt ungewöhnlich, ist aber gesetzlich vorgeschrieben. Gemeint ist bewusstes Herbeiführen der Bedürftigkeit – z.B. wenn jemand sein gesamtes Vermögen verschenkt, um staatliche Hilfe zu beziehen. Wenn Sie einfach nur wenig Geld haben, lautet die Antwort ‚Nein'." />
+            <Tooltip text={t.additional.selfInflictedTooltip} />
           </div>
           <p className="text-sm text-gray-500 mb-2">
-            z.B. Vermögen verschenkt, um Grundsicherung zu bekommen
+            {t.additional.selfInflictedHint}
           </p>
           <RadioGroup
             name="beduerftigkeitSelbst"
             options={[
-              { value: 'nein', label: 'Nein' },
-              { value: 'ja', label: 'Ja' },
+              { value: 'nein', label: t.common.no },
+              { value: 'ja', label: t.common.yes },
             ]}
             value={
               formData.beduerftigkeitSelbstHerbeigefuehrt === true
@@ -89,7 +92,7 @@ export function ZusatzfragenStep({ formData, onUpdate, onNext, onBack }: Zusatzf
         </div>
       </div>
 
-      <NavigationButtons onBack={onBack} onNext={onNext} nextLabel="Ergebnis berechnen" />
+      <NavigationButtons onBack={onBack} onNext={onNext} nextLabel={t.additional.calculateResult} />
     </div>
   );
 }

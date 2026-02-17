@@ -2,6 +2,7 @@ import { RadioGroup } from '../ui/RadioGroup';
 import { NumberInput } from '../ui/NumberInput';
 import { Tooltip } from '../ui/Tooltip';
 import { NavigationButtons } from '../NavigationButtons';
+import { useTranslation } from '../../i18n/LanguageContext';
 import type { FormData } from '../../types';
 
 type WohnungStepProps = {
@@ -12,14 +13,16 @@ type WohnungStepProps = {
 };
 
 export function WohnungStep({ formData, onUpdate, onNext, onBack }: WohnungStepProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-xl sm:text-2xl font-bold text-primary-800">
-          Wie wohnen Sie?
+          {t.housing.heading}
         </h2>
         <p className="text-gray-600 mt-1">
-          Die Grundsicherung übernimmt auch angemessene Wohn- und Heizkosten.
+          {t.housing.subheading}
         </p>
       </div>
 
@@ -28,15 +31,15 @@ export function WohnungStep({ formData, onUpdate, onNext, onBack }: WohnungStepP
         <div>
           <div className="flex items-center gap-1 mb-2">
             <span className="text-base font-semibold text-gray-800">
-              Wohnen Sie zur Miete oder im Eigentum?
+              {t.housing.rentOrOwn}
             </span>
-            <Tooltip text="Auch wenn Sie in Ihrer eigenen Wohnung leben, können Sie Grundsicherung erhalten. Eine angemessene selbstgenutzte Immobilie müssen Sie nicht verkaufen." />
+            <Tooltip text={t.housing.rentOrOwnTooltip} />
           </div>
           <RadioGroup
             name="wohnart"
             options={[
-              { value: 'miete', label: 'Zur Miete' },
-              { value: 'eigentum', label: 'Im eigenen Haus oder Eigentumswohnung' },
+              { value: 'miete', label: t.housing.rent },
+              { value: 'eigentum', label: t.housing.own },
             ]}
             value={
               formData.wohntZurMiete === true
@@ -53,9 +56,9 @@ export function WohnungStep({ formData, onUpdate, onNext, onBack }: WohnungStepP
         <div>
           <div className="flex items-center gap-1 mb-2">
             <span className="text-base font-semibold text-gray-800">
-              Wie hoch ist Ihre monatliche Warmmiete (Kaltmiete + Nebenkosten, ohne Heizung)?
+              {t.housing.warmRent}
             </span>
-            <Tooltip text="Gemeint ist die Kaltmiete plus Betriebskosten (Wasser, Müll, Hausmeister etc.), aber OHNE Heizung. Wenn Sie im Eigentum wohnen, geben Sie hier Ihre monatlichen Wohnkosten ein (Hausgeld, Grundsteuer etc.)." />
+            <Tooltip text={t.housing.warmRentTooltip} />
           </div>
           <NumberInput
             label=""
@@ -68,9 +71,9 @@ export function WohnungStep({ formData, onUpdate, onNext, onBack }: WohnungStepP
         <div>
           <div className="flex items-center gap-1 mb-2">
             <span className="text-base font-semibold text-gray-800">
-              Wie hoch sind Ihre monatlichen Heizkosten?
+              {t.housing.heating}
             </span>
-            <Tooltip text="Gas, Öl, Fernwärme – der monatliche Betrag. Wenn die Heizkosten in den Nebenkosten enthalten sind, tragen Sie hier 0 ein und geben oben die Gesamtsumme an." />
+            <Tooltip text={t.housing.heatingTooltip} />
           </div>
           <NumberInput
             label=""
@@ -80,7 +83,11 @@ export function WohnungStep({ formData, onUpdate, onNext, onBack }: WohnungStepP
         </div>
       </div>
 
-      <NavigationButtons onBack={onBack} onNext={onNext} />
+      <NavigationButtons
+        onBack={onBack}
+        onNext={onNext}
+        nextDisabled={formData.wohntZurMiete === null}
+      />
     </div>
   );
 }

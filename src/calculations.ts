@@ -8,6 +8,19 @@ import type {
   Familienstand,
 } from './types';
 
+export type CalcStrings = {
+  noResidence: string;
+  noAgeNoDisability: (grenzeText: string) => string;
+  yearsAndMonths: (jahre: number, monate: number) => string;
+  selfInflicted: string;
+  maintenanceOver100k: string;
+  assetsTooHigh: (vermoegen: string, freibetrag: string) => string;
+  incomeCovers: (einkommen: string, bedarf: string) => string;
+  employmentAllowance: string;
+  retirementAllowance: string;
+  basicPensionAllowance: string;
+};
+
 export function getAltersgrenze(geburtsjahr: number): { jahre: number; monate: number } {
   if (geburtsjahr < 1947) return { jahre: 65, monate: 0 };
   if (geburtsjahr >= 1964) return { jahre: 67, monate: 0 };
@@ -89,7 +102,7 @@ export function berechneAnrechenbaresEinkommen(input: {
   sonstigesEinkommen: number;
   einkommenPartner: number;
   hatGrundrentenzeiten33Plus: boolean;
-}): EinkommensDetails {
+}, strings: CalcStrings): EinkommensDetails {
   const {
     gesetzlicheRente,
     betriebsrente,
@@ -114,7 +127,7 @@ export function berechneAnrechenbaresEinkommen(input: {
     );
     abzuege += erwerbsFreibetrag;
     freibetraegeDetails.push({
-      name: 'Freibetrag Erwerbstätigkeit (30%)',
+      name: strings.employmentAllowance,
       betrag: erwerbsFreibetrag,
     });
   }
@@ -130,7 +143,7 @@ export function berechneAnrechenbaresEinkommen(input: {
     const effektiverFreibetrag = Math.min(vorsorgeFreibetrag, altersvorsorgeEinkommen);
     abzuege += effektiverFreibetrag;
     freibetraegeDetails.push({
-      name: 'Freibetrag Altersvorsorge',
+      name: strings.retirementAllowance,
       betrag: effektiverFreibetrag,
     });
   }
@@ -145,7 +158,7 @@ export function berechneAnrechenbaresEinkommen(input: {
     const effektiverFreibetrag = Math.min(grundrenteFreibetrag, gesetzlicheRente);
     abzuege += effektiverFreibetrag;
     freibetraegeDetails.push({
-      name: 'Freibetrag Grundrentenzeiten (\u226533 Jahre)',
+      name: strings.basicPensionAllowance,
       betrag: effektiverFreibetrag,
     });
   }
@@ -179,7 +192,7 @@ export function berechneAnspruch(allInputs: {
   sonstigesEinkommen: number;
   einkommenPartner: number;
   hatGrundrentenzeiten33Plus: boolean;
-}): Ergebnis {
+}, strings: CalcStrings): Ergebnis {
   const ergebnis: Ergebnis = {
     hatAnspruch: false,
     ausschlussgruende: [],
@@ -197,7 +210,7 @@ export function berechneAnspruch(allInputs: {
   if (!allInputs.wohntInDeutschland) {
     ausschlussgruende.push({
       code: 'KEIN_AUFENTHALT_DE',
-      text: 'Die Grundsicherung setzt einen Wohnsitz in Deutschland voraus.',
+      text: strings.noResidence,
     });
   }
 
@@ -207,10 +220,10 @@ export function berechneAnspruch(allInputs: {
   const hatEM = allInputs.istDauerhaftVollErwerbsgemindert;
 
   if (!hatAlter && !hatEM) {
-    const grenzeText = `${altersgrenze.jahre} Jahre und ${altersgrenze.monate} Monate`;
+    const grenzeText = strings.yearsAndMonths(altersgrenze.jahre, altersgrenze.monate);
     ausschlussgruende.push({
       code: 'KEIN_ALTER_KEINE_EM',
-      text: `Die Grundsicherung im Alter richtet sich an Personen ab dem Rentenalter (bei Ihrem Jahrgang: ${grenzeText}) oder an dauerhaft voll Erwerbsgeminderte ab 18 Jahren.`,
+      text: strings.noAgeNoDisability(grenzeText),
     });
   }
 
@@ -218,7 +231,7 @@ export function berechneAnspruch(allInputs: {
   if (allInputs.beduerftigkeitSelbstHerbeigefuehrt) {
     ausschlussgruende.push({
       code: 'SELBST_HERBEIGEFUEHRT',
-      text: 'Wenn die Bedürftigkeit in den letzten 10 Jahren absichtlich oder grob fahrlässig herbeigeführt wurde, kann der Anspruch entfallen.',
+      text: strings.selfInflicted,
     });
   }
 
@@ -226,7 +239,7 @@ export function berechneAnspruch(allInputs: {
   if (allInputs.unterhaltspflichtigeUeber100k) {
     ausschlussgruende.push({
       code: 'UNTERHALT_UEBER_100K',
-      text: 'Wenn ein Kind oder Elternteil mehr als 100.000 \u20AC brutto im Jahr verdient, greift die Unterhaltspflicht.',
+      text: strings.maintenanceOver100k,
     });
   }
 
@@ -236,7 +249,10 @@ export function berechneAnspruch(allInputs: {
   if (!vermoegensPruefung.bestanden) {
     ausschlussgruende.push({
       code: 'VERMOEGEN_ZU_HOCH',
-      text: `Ihr Vermögen (${allInputs.gesamtvermoegen.toLocaleString('de-DE')} \u20AC) liegt über dem Freibetrag von ${vermoegensPruefung.schongrenze.toLocaleString('de-DE')} \u20AC.`,
+      text: strings.assetsTooHigh(
+        allInputs.gesamtvermoegen.toLocaleString('de-DE'),
+        vermoegensPruefung.schongrenze.toLocaleString('de-DE'),
+      ),
     });
   }
 
@@ -256,7 +272,7 @@ export function berechneAnspruch(allInputs: {
     sonstigesEinkommen: allInputs.sonstigesEinkommen,
     einkommenPartner: allInputs.einkommenPartner,
     hatGrundrentenzeiten33Plus: allInputs.hatGrundrentenzeiten33Plus,
-  });
+  }, strings);
 
   ergebnis.bruttobedarf = bedarf.bruttobedarf;
   ergebnis.anrechenbaresEinkommen = einkommen.anrechenbaresEinkommen;
@@ -267,7 +283,10 @@ export function berechneAnspruch(allInputs: {
   if (ergebnis.nettobedarf <= 0 && ausschlussgruende.length === 0) {
     ausschlussgruende.push({
       code: 'EINKOMMEN_REICHT',
-      text: `Ihr monatliches angerechnetes Einkommen (${formatEuro(einkommen.anrechenbaresEinkommen)}) deckt Ihren Bedarf (${formatEuro(bedarf.bruttobedarf)}).`,
+      text: strings.incomeCovers(
+        formatEuro(einkommen.anrechenbaresEinkommen),
+        formatEuro(bedarf.bruttobedarf),
+      ),
     });
   }
 

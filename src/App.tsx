@@ -9,7 +9,10 @@ import { VermoegenStep } from './components/steps/VermoegenStep';
 import { ZusatzfragenStep } from './components/steps/ZusatzfragenStep';
 import { ErgebnisStep } from './components/steps/ErgebnisStep';
 import { berechneAnspruch } from './calculations';
+import { useTranslation } from './i18n/LanguageContext';
 import type { FormData, WizardAction, WizardState, Ergebnis } from './types';
+import type { CalcStrings } from './calculations';
+import type { Translations } from './i18n/translations';
 
 const initialFormData: FormData = {
   geburtsmonat: null,
@@ -60,7 +63,7 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
   }
 }
 
-function berechneErgebnis(formData: FormData): Ergebnis {
+function berechneErgebnis(formData: FormData, calcStrings: CalcStrings): Ergebnis {
   return berechneAnspruch({
     geburtsjahr: formData.geburtsjahr ?? 1960,
     geburtsmonat: formData.geburtsmonat ?? 1,
@@ -82,12 +85,17 @@ function berechneErgebnis(formData: FormData): Ergebnis {
     sonstigesEinkommen: formData.sonstigesEinkommen,
     einkommenPartner: formData.einkommenPartner,
     hatGrundrentenzeiten33Plus: formData.hatGrundrentenzeiten === 'ja',
-  });
+  }, calcStrings);
+}
+
+function getCalcStrings(t: Translations): CalcStrings {
+  return t.calc;
 }
 
 export default function App() {
   const [state, dispatch] = useReducer(wizardReducer, initialState);
   const { currentStep, formData } = state;
+  const { t } = useTranslation();
 
   const handleUpdate = (field: keyof FormData, value: FormData[keyof FormData]) => {
     dispatch({ type: 'UPDATE_FIELD', field, value });
@@ -110,7 +118,7 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
-  const ergebnis = currentStep === 6 ? berechneErgebnis(formData) : null;
+  const ergebnis = currentStep === 6 ? berechneErgebnis(formData, getCalcStrings(t)) : null;
 
   return (
     <div className="min-h-screen flex flex-col">

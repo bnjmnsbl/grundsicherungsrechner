@@ -2,8 +2,8 @@ import { NumberInput } from '../ui/NumberInput';
 import { RadioGroup } from '../ui/RadioGroup';
 import { Tooltip } from '../ui/Tooltip';
 import { NavigationButtons } from '../NavigationButtons';
+import { useTranslation } from '../../i18n/LanguageContext';
 import type { FormData } from '../../types';
-
 
 type EinkommenStepProps = {
   formData: FormData;
@@ -13,18 +13,17 @@ type EinkommenStepProps = {
 };
 
 export function EinkommenStep({ formData, onUpdate, onNext, onBack }: EinkommenStepProps) {
+  const { t } = useTranslation();
   const zeigePartnerEinkommen = formData.familienstand === 'partnerschaft';
 
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-xl sm:text-2xl font-bold text-primary-800">
-          Welches Einkommen haben Sie?
+          {t.income.heading}
         </h2>
         <p className="text-gray-600 mt-1">
-          Tragen Sie Ihre monatlichen Einkünfte ein – jeweils den Betrag, der auf
-          Ihrem Konto ankommt (netto). Felder, die nicht auf Sie zutreffen, lassen
-          Sie einfach leer.
+          {t.income.subheading}
         </p>
       </div>
 
@@ -33,9 +32,9 @@ export function EinkommenStep({ formData, onUpdate, onNext, onBack }: EinkommenS
         <div>
           <div className="flex items-center gap-1 mb-1">
             <span className="text-base font-semibold text-gray-800">
-              Gesetzliche Rente (monatlich netto)
+              {t.income.pension}
             </span>
-            <Tooltip text="Der Betrag, der nach Abzug von Kranken- und Pflegeversicherung auf Ihr Konto überwiesen wird. Sie finden ihn auf Ihrem Rentenbescheid oder Kontoauszug." />
+            <Tooltip text={t.income.pensionTooltip} />
           </div>
           <NumberInput
             label=""
@@ -48,9 +47,9 @@ export function EinkommenStep({ formData, onUpdate, onNext, onBack }: EinkommenS
         <div>
           <div className="flex items-center gap-1 mb-1">
             <span className="text-base font-semibold text-gray-800">
-              Betriebsrente (monatlich netto)
+              {t.income.companyPension}
             </span>
-            <Tooltip text="Auch Direktversicherung, Pensionskasse oder Zusatzversorgung des öffentlichen Dienstes (z.B. VBL)." />
+            <Tooltip text={t.income.companyPensionTooltip} />
           </div>
           <NumberInput
             label=""
@@ -63,9 +62,9 @@ export function EinkommenStep({ formData, onUpdate, onNext, onBack }: EinkommenS
         <div>
           <div className="flex items-center gap-1 mb-1">
             <span className="text-base font-semibold text-gray-800">
-              Private Rente oder Riester-Auszahlung (monatlich)
+              {t.income.privatePension}
             </span>
-            <Tooltip text="Monatliche Auszahlungen aus privater Rentenversicherung, Riester-Vertrag oder Rürup-Rente." />
+            <Tooltip text={t.income.privatePensionTooltip} />
           </div>
           <NumberInput
             label=""
@@ -78,9 +77,9 @@ export function EinkommenStep({ formData, onUpdate, onNext, onBack }: EinkommenS
         <div>
           <div className="flex items-center gap-1 mb-1">
             <span className="text-base font-semibold text-gray-800">
-              Einkommen aus Arbeit (monatlich brutto)
+              {t.income.employment}
             </span>
-            <Tooltip text="Falls Sie nebenbei arbeiten, z.B. einen Minijob haben. Hier den Brutto-Betrag angeben – es gibt einen Freibetrag." />
+            <Tooltip text={t.income.employmentTooltip} />
           </div>
           <NumberInput
             label=""
@@ -93,9 +92,9 @@ export function EinkommenStep({ formData, onUpdate, onNext, onBack }: EinkommenS
         <div>
           <div className="flex items-center gap-1 mb-1">
             <span className="text-base font-semibold text-gray-800">
-              Sonstige Einkünfte (monatlich)
+              {t.income.otherIncome}
             </span>
-            <Tooltip text="z.B. Mieteinnahmen, Unterhaltszahlungen die Sie erhalten, Zinsen, Witwenrente etc." />
+            <Tooltip text={t.income.otherIncomeTooltip} />
           </div>
           <NumberInput
             label=""
@@ -109,9 +108,9 @@ export function EinkommenStep({ formData, onUpdate, onNext, onBack }: EinkommenS
           <div>
             <div className="flex items-center gap-1 mb-1">
               <span className="text-base font-semibold text-gray-800">
-                Einkommen Ihres Partners / Ihrer Partnerin (monatlich netto gesamt)
+                {t.income.partnerIncome}
               </span>
-              <Tooltip text="Die Summe aller Einkünfte Ihres Ehe- oder Lebenspartners. Bei Paaren wird das Einkommen gemeinsam betrachtet." />
+              <Tooltip text={t.income.partnerIncomeTooltip} />
             </div>
             <NumberInput
               label=""
@@ -125,16 +124,16 @@ export function EinkommenStep({ formData, onUpdate, onNext, onBack }: EinkommenS
         <div>
           <div className="flex items-center gap-1 mb-2">
             <span className="text-base font-semibold text-gray-800">
-              Haben Sie mindestens 33 Jahre lang in die Rentenversicherung eingezahlt?
+              {t.income.pensionYears}
             </span>
-            <Tooltip text="Gemeint sind sogenannte ‚Grundrentenzeiten': Jahre, in denen Pflichtbeiträge zur Rentenversicherung gezahlt wurden – z.B. durch Arbeit, Kindererziehung oder Pflege. Wenn ja, wird ein Teil Ihrer Rente nicht auf die Grundsicherung angerechnet. Sie finden diese Information in Ihrem Rentenversicherungsverlauf." />
+            <Tooltip text={t.income.pensionYearsTooltip} />
           </div>
           <RadioGroup
             name="grundrentenzeiten"
             options={[
-              { value: 'ja', label: 'Ja' },
-              { value: 'nein', label: 'Nein' },
-              { value: 'weiss_nicht', label: 'Ich weiß nicht' },
+              { value: 'ja', label: t.common.yes },
+              { value: 'nein', label: t.common.no },
+              { value: 'weiss_nicht', label: t.income.dontKnow },
             ]}
             value={formData.hatGrundrentenzeiten}
             onChange={(v) => onUpdate('hatGrundrentenzeiten', v as FormData['hatGrundrentenzeiten'])}
@@ -142,7 +141,11 @@ export function EinkommenStep({ formData, onUpdate, onNext, onBack }: EinkommenS
         </div>
       </div>
 
-      <NavigationButtons onBack={onBack} onNext={onNext} />
+      <NavigationButtons
+        onBack={onBack}
+        onNext={onNext}
+        nextDisabled={formData.hatGrundrentenzeiten === null}
+      />
     </div>
   );
 }
