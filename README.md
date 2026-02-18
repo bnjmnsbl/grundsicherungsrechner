@@ -1,6 +1,6 @@
 # Grundsicherungsrechner
 
-Ein webbasierter Rechner, der Nutzer Schritt für Schritt prüft, ob sie Anspruch auf **Grundsicherung im Alter** (SGB XII) haben und wie hoch die Leistung ungefähr wäre.
+Ein webbasierter Rechner, der für Nutzer Schritt für Schritt prüft, ob sie Anspruch auf **Grundsicherung im Alter** (SGB XII) haben und wie hoch die Leistung ungefähr wäre.
 
 ![Screenshot der Startseite](screenshot.png)
 
