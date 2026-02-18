@@ -93,9 +93,9 @@ const de = {
     rent: 'Zur Miete',
     own: 'Im eigenen Haus oder Eigentumswohnung',
     warmRent:
-      'Wie hoch ist Ihre monatliche Warmmiete (Kaltmiete + Nebenkosten, ohne Heizung)?',
+      'Wie hoch ist Ihre monatliche Miete inkl. Nebenkosten (ohne Heizung)?',
     warmRentTooltip:
-      'Gemeint ist die Kaltmiete plus Betriebskosten (Wasser, Müll, Hausmeister etc.), aber OHNE Heizung. Wenn Sie im Eigentum wohnen, geben Sie hier Ihre monatlichen Wohnkosten ein (Hausgeld, Grundsteuer etc.).',
+      'Gemeint ist die Kaltmiete plus kalte Betriebskosten (Wasser, Müll, Hausmeister etc.), aber OHNE Heizung. Im Fachjargon heißt das „Bruttokaltmiete". Wenn Sie im Eigentum wohnen, geben Sie hier Ihre monatlichen Wohnkosten ein (Hausgeld, Grundsteuer etc.).',
     heating: 'Wie hoch sind Ihre monatlichen Heizkosten?',
     heatingTooltip:
       'Gas, Öl, Fernwärme – der monatliche Betrag. Wenn die Heizkosten in den Nebenkosten enthalten sind, tragen Sie hier 0 ein und geben oben die Gesamtsumme an.',
@@ -203,7 +203,7 @@ const de = {
     calculationTitle: 'So haben wir gerechnet',
     needsTitle: 'Ihr Bedarf (was Ihnen zusteht):',
     standardRate: 'Regelsatz',
-    housingCosts: 'Wohnkosten (Miete + NK)',
+    housingCosts: 'Wohnkosten (Miete + Nebenkosten)',
     heatingCosts: 'Heizkosten',
     disabilityExtra: 'Mehrbedarf Schwerbehinderung',
     totalNeed: 'Gesamtbedarf',
@@ -357,9 +357,9 @@ const en: Translations = {
     rent: 'Renting',
     own: 'Own house or apartment',
     warmRent:
-      'How much is your monthly warm rent (base rent + utilities, excluding heating)?',
+      'How much is your monthly rent incl. utilities (excluding heating)?',
     warmRentTooltip:
-      'This means the base rent plus utilities (water, waste, caretaker, etc.), but WITHOUT heating. If you own your home, enter your monthly housing costs here (maintenance fees, property tax, etc.).',
+      'This means the base rent plus cold utilities (water, waste, caretaker, etc.), but WITHOUT heating. In German this is called "Bruttokaltmiete". If you own your home, enter your monthly housing costs here (maintenance fees, property tax, etc.).',
     heating: 'How much are your monthly heating costs?',
     heatingTooltip:
       'Gas, oil, district heating \u2013 the monthly amount. If heating costs are included in your utilities, enter 0 here and include the total amount above.',
